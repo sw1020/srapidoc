@@ -6,38 +6,106 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<link rel="stylesheet" href="reveal.js/css/reveal.css">
 		<link rel="stylesheet" href="reveal.js/css/theme/night.css" id="theme">
+		<link rel="stylesheet" href="reveal.js/lib/css/zenburn.css">
 		<link href="js/highlight/styles/monokai-sublime.css" rel="stylesheet">
+		<style>
+			blockquote { text-align: left; }
+		</style>
 	</head>
+
 
 	<body>
 
 		<div class="reveal">
-
 			<div class="slides">
-
 				<section>
-					<h2>reveal.js Math Plugin</h2>
-					<p>A thin wrapper for MathJax</p>
+					<h2 class="awesome">SR API Server代码解说</h2>
+					<div class="footer footer-note">
+						可以使用键盘<span class="key">→</span> and <span class="key">↓</span>来导航
+
+						<script>
+							if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) ) document.write( '<p style="color: rgba(0,0,0,0.3); text-shadow: none;">('+'Tap to navigate'+')</p>' );
+						</script>
+					</div>
 				</section>
 
+
 				<section>
-					<h2>test js code</h2>
+					<section>
+						<h2 class="awesome">目录结构</h2>
+						<img src="img/001-folder.png">
+					</section>
+					<section>
+						<blockquote>
+							<h3>http_interface</h3>
+							<p>内部manager.js定义了目前所需要的http对外接口</p>
+						</blockquote>
+						<blockquote>
+							<h3>models</h3>
+							<p>主要是为了演示和测试的方便,定义了MongoDB里面的数据关系</p>
+							<p>JSONWebToken.js是登录app用户的token存放集合和关系定义</p>
+							<p>User.js是登录app用户的存放集合和关系定义</p>
+							<p>后期转换为正式项目应该直接使用MySql</p>
+							<p>不再需要这部分代码了</p>
+						</blockquote>
+					</section>
+					<section>
+						<blockquote>
+							<h3>mq_interface</h3>
+							<p>内部manager.js定义了目前所需要的mq处理代码,里面主要包括了MQ的初始化连接和建立需要的交换器和队列</p>
+						</blockquote>
+						<blockquote>
+							<h3>protocol</h3>
+							<p>内部包含了你所需要的protobuf的协议文件,今后的协议文件都可以放在这里面</p>
+						</blockquote>
+						<blockquote>
+							<h3>public</h3>
+							<p>内部包含了一个AngularJS的Client示例代码</p>
+						</blockquote>
+					</section>
+					<section>
+						<blockquote>
+							<h3>ssl</h3>
+							<p>内部主要都是证书文件和初始化证书文件的代码,后期证书修改在此处做,用于HTTPS通讯</p>
+						</blockquote>
+						<blockquote>
+							<h3>其他文件</h3>
+							<p>app.js: 		 	启动文件</p>
+							<p>conf.js: 	 	程序配置文件</p>
+							<p>convertor.js: 	ProtoBuf协议编解码文件</p>
+							<p>resource.js:  	程序所需资源文件,如数据库 MQ HTTP等</p>
+						</blockquote>
+					</section>
+				</section>
+
+
+				<section>
+					<section>
+						<h2>app.js 程序启动</h2>
+					</section>
+					<section>
+						<h3>加载公共库,启动main函数</h3>
 					<pre>
 						<code class="javascript">
 var sc = require("smartacjs");
 var app = sc.app();
-
+function main(){...}
+sc.runMain(main);
+						</code></pre>
+					</section>
+					<section>
+						<h3>main函数</h3>
+						<blockquote>加载资源,初始化各个模块</blockquote>
+					<pre>
+						<code class="javascript">
 
 function main(){
-
-	// resource
 	var resouce = require("./resource");
 	if( !!!resouce ){
 		console.error("load resource failed!");
 		return false;
 	}else
 		app.resource = resouce;
-
 	var httpInterface = require("./http_interface/manager");
 	if( !!!httpInterface ){
 		console.error("load resource failed!");
@@ -49,145 +117,468 @@ function main(){
 	if( !!!mqInterface.init() ){
 		console.error("load resource failed!");
 		return false;
-
 	}
 	else
 		app.mqInterface = mqInterface;
 }
-					</code></pre>
-				</section>
-
-				<section>
-					<h3>The Lorenz Equations</h3>
-
-					\[\begin{aligned}
-					\dot{x} &amp; = \sigma(y-x) \\
-					\dot{y} &amp; = \rho x - y - xz \\
-					\dot{z} &amp; = -\beta z + xy
-					\end{aligned} \]
-				</section>
-
-				<section>
-					<h3>The Cauchy-Schwarz Inequality</h3>
-
-					<script type="math/tex; mode=display">
-						\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)
-					</script>
-				</section>
-
-				<section>
-					<h3>A Cross Product Formula</h3>
-
-					\[\mathbf{V}_1 \times \mathbf{V}_2 =  \begin{vmatrix}
-					\mathbf{i} &amp; \mathbf{j} &amp; \mathbf{k} \\
-					\frac{\partial X}{\partial u} &amp;  \frac{\partial Y}{\partial u} &amp; 0 \\
-					\frac{\partial X}{\partial v} &amp;  \frac{\partial Y}{\partial v} &amp; 0
-					\end{vmatrix}  \]
-				</section>
-
-				<section>
-					<h3>The probability of getting \(k\) heads when flipping \(n\) coins is</h3>
-
-					\[P(E)   = {n \choose k} p^k (1-p)^{ n-k} \]
-				</section>
-
-				<section>
-					<h3>An Identity of Ramanujan</h3>
-
-					\[ \frac{1}{\Bigl(\sqrt{\phi \sqrt{5}}-\phi\Bigr) e^{\frac25 \pi}} =
-					1+\frac{e^{-2\pi}} {1+\frac{e^{-4\pi}} {1+\frac{e^{-6\pi}}
-					{1+\frac{e^{-8\pi}} {1+\ldots} } } } \]
-				</section>
-
-				<section>
-					<h3>A Rogers-Ramanujan Identity</h3>
-
-					\[  1 +  \frac{q^2}{(1-q)}+\frac{q^6}{(1-q)(1-q^2)}+\cdots =
-					\prod_{j=0}^{\infty}\frac{1}{(1-q^{5j+2})(1-q^{5j+3})}\]
-				</section>
-
-				<section>
-					<h3>Maxwell&#8217;s Equations</h3>
-
-					\[  \begin{aligned}
-					\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &amp; = \frac{4\pi}{c}\vec{\mathbf{j}} \\   \nabla \cdot \vec{\mathbf{E}} &amp; = 4 \pi \rho \\
-					\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} &amp; = \vec{\mathbf{0}} \\
-					\nabla \cdot \vec{\mathbf{B}} &amp; = 0 \end{aligned}
-					\]
+						</code></pre>
+					</section>
 				</section>
 
 				<section>
 					<section>
-						<h3>The Lorenz Equations</h3>
+						<h2>resource.js 资源加载</h2>
+					</section>
+					<section>
+						<h3>框架</h3>
+						<blockquote>新建Resource对象,调用初始化函数,失败则返回null</blockquote>
+					<pre>
+						<code class="javascript">
+var Resource = function () {
 
-						<div class="fragment">
-							\[\begin{aligned}
-							\dot{x} &amp; = \sigma(y-x) \\
-							\dot{y} &amp; = \rho x - y - xz \\
-							\dot{z} &amp; = -\beta z + xy
-							\end{aligned} \]
-						</div>
+}
+Resource.prototype.init = function(){
+	//...
+}
+module.exports=new Resource();
+
+if( !module.exports.init() ){
+	module.exports = null;
+}
+						</code></pre>
+					</section>
+					<section>
+						<h3>init函数</h3>
+						<blockquote>加载各类资源,建立web Server实例</blockquote>
+					<pre>
+						<code class="javascript">
+
+var ssl = require('./ssl/sslkey.js'); //加载证书
+this._webapp = express(); // 建立express实例
+var concat = require('concat-stream'); // 加载stream连接组件,用于组合post数据
+// 组合post数据,主要是由于protobuf的关系,不使用express原生功能
+this._webapp.use(function(req, res, next){
+	req.pipe(concat(function(data){
+		req.raw_body = data.toString();
+		next();
+	}));
+});
+						</code></pre>
+					</section>
+					<section>
+						<blockquote>加载各类资源,建立web Server实例</blockquote>
+					<pre>
+						<code class="javascript">
+// 创建中间件,在HTTP的发送头部加入必要的信息
+// 主要是加入需要认证的信息和允许跨域访问
+this._webapp.use(function (req, res, next) {
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,
+							Authorization');
+	next();
+});
+// 静态资源主要是为了演示, 后期也可以用于管理界面或者申请界面
+this._webapp.use('/static', express.static(__dirname + '/public'));
+// 启动HTTP服务
+this._webapp.listen(app.conf.http_listen_port, function () {
+	console.log("HTTP server listening on port " + app.conf.http_listen_port);
+});
+
+						</code></pre>
+					</section>
+					<section>
+						<blockquote>加载各类资源,建立web Server实例</blockquote>
+					<pre>
+						<code class="javascript">
+// 启动HTTPS服务
+https.createServer(ssl.options,this._webapp).listen(app.conf.https_listen_port,
+	function(){
+		console.log("HTTPS server listening on port " +
+							app.conf.https_listen_port);
+	});
+});
+// 启动MQ连接
+this._mqConnection=sc.RabbitMQ().createConnect(app.conf.mqUrl);
+	if (!!!this._mqConnection){
+		return false;
+}
+this._mqConnection.start();
+// 启动MongoDB服务, 同时把Mongoose的Promise换成When的
+this._mongoose    = require("mongoose");
+this._mongoose.Promise = Promise;
+this._mongoose.connect(app.conf.mongoUrl);
+// 如果有数据库服务, 也在这里启动
+						</code></pre>
+					</section>
+
+				</section>
+
+				<section>
+					<section>
+						<h2>conf.js 配置文件</h2>
+					</section>
+					<section>
+						<blockquote>在此处配置程序需要的所有配置, 其他配置都比较浅显移动, 主要针对讲解mq部分, 先讲解一个发送通知消息的方式</blockquote>
+					<pre>
+						<code class="javascript">
+conf.options =
+{
+	//定义一个funciton的主名字,在外部调用时,需要再URL中指定该名字,我们以支付为例
+	pay:
+	{
+		notify: // 定义了一个function的副名字, 在URL中表现位pay.notify
+		{
+			// 使用哪个mq, 在conf文件中可以定义多个mq, 可以为每个mq指定一个名字
+			mq: "default",
+			type: "exchange",// 配置类型:exchange/rpc_client
+			exchange_type: "direct",// 交换器类型:topic/fanout/direct
+			exchange_name: "pay.notify", // 因为是交换机类型, 指定交换机名字
+			durable: true, // 交换机的属性, 是否永久
+			autoDelete: false // 交换机的属性, 是否自动删除
+		}
+		//...
+	},
+}
+						</code></pre>
 					</section>
 
 					<section>
-						<h3>The Cauchy-Schwarz Inequality</h3>
-
-						<div class="fragment">
-							\[ \left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right) \]
-						</div>
+						<blockquote>继续前面的Pay,讲述定义一个rpc client</blockquote>
+					<pre>
+						<code class="javascript">
+conf.options =
+{	//定义一个funciton的主名字,在外部调用时,需要再URL中指定该名字,我们以支付为例
+	pay:
+	{
+		//...
+		server: // 定义了一个function的副名字, 在URL中表现位pay.server
+		{
+			// 使用哪个mq, 在conf文件中可以定义多个mq, 可以为每个mq指定一个名字
+			mq: "default",
+			type: "rpc_client", // 配置类型:exchange/rpc_client
+			rpc_name: "cf.pay.rpc" // 因为是rpc_client, 指定rpc_client名字
+			// 指定协议编解码文件, 以及协议的一些参数, 非常重要哦
+			convertor: convertor.protobuff(path.resolve(__dirname,
+				'protocol/sr_customer_coupon.proto.js'),
+				'sr.customer.coupon','Message')
+		}
+	},
+}
+						</code></pre>
 					</section>
-
 					<section>
-						<h3>A Cross Product Formula</h3>
-
-						<div class="fragment">
-							\[\mathbf{V}_1 \times \mathbf{V}_2 =  \begin{vmatrix}
-							\mathbf{i} &amp; \mathbf{j} &amp; \mathbf{k} \\
-							\frac{\partial X}{\partial u} &amp;  \frac{\partial Y}{\partial u} &amp; 0 \\
-							\frac{\partial X}{\partial v} &amp;  \frac{\partial Y}{\partial v} &amp; 0
-							\end{vmatrix}  \]
-						</div>
-					</section>
-
-					<section>
-						<h3>The probability of getting \(k\) heads when flipping \(n\) coins is</h3>
-
-						<div class="fragment">
-							\[P(E)   = {n \choose k} p^k (1-p)^{ n-k} \]
-						</div>
-					</section>
-
-					<section>
-						<h3>An Identity of Ramanujan</h3>
-
-						<div class="fragment">
-							\[ \frac{1}{\Bigl(\sqrt{\phi \sqrt{5}}-\phi\Bigr) e^{\frac25 \pi}} =
-							1+\frac{e^{-2\pi}} {1+\frac{e^{-4\pi}} {1+\frac{e^{-6\pi}}
-							{1+\frac{e^{-8\pi}} {1+\ldots} } } } \]
-						</div>
-					</section>
-
-					<section>
-						<h3>A Rogers-Ramanujan Identity</h3>
-
-						<div class="fragment">
-							\[  1 +  \frac{q^2}{(1-q)}+\frac{q^6}{(1-q)(1-q^2)}+\cdots =
-							\prod_{j=0}^{\infty}\frac{1}{(1-q^{5j+2})(1-q^{5j+3})}\]
-						</div>
-					</section>
-
-					<section>
-						<h3>Maxwell&#8217;s Equations</h3>
-
-						<div class="fragment">
-							\[  \begin{aligned}
-							\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &amp; = \frac{4\pi}{c}\vec{\mathbf{j}} \\   \nabla \cdot \vec{\mathbf{E}} &amp; = 4 \pi \rho \\
-							\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} &amp; = \vec{\mathbf{0}} \\
-							\nabla \cdot \vec{\mathbf{B}} &amp; = 0 \end{aligned}
-							\]
-						</div>
+						<blockquote>既然讲到了rpc client, 我们当然还有rpc server,不过目前可能用不到, 他主要用于我们内部的后端服务向请求外部HTTP.</blockquote>
 					</section>
 				</section>
+				<section>
+					<section>
+						<h2>convertor.js ProtoBuf协议编解码</h2>
+					</section>
+					<section>
+						<blockquote>这块代码比较简单,主要先定义了一个默认编码器, 用于Buffer和String的互转,如果在之前的Conf里面没指定,就会用到这个</blockquote>
+					<pre>
+						<code class="javascript">
+exports.default=function(content){
+try{
+	if (content instanceof Buffer){
+		return content.toString();
+	}
+	else{
+		return new Buffer(content);
+	}
+}
+	catch(e)
+	{
+		console.error("convertor_default crash!error=%s,content=%s",
+							e,content);
+	}
+	return null;
+}
+						</code></pre>
+					</section>
+					<section>
+						<blockquote>如果有指定协议文件, 就要进行协议文件加载解析</blockquote>
+					<pre>
+						<code class="javascript">
+exports.protobuff=function(file,ns,msg)
+{
+	var encoder = sc.createPBEncoder();
+	encoder.init(file,ns,msg);
+	// 返回真正的转换函数
+	return function(content)
+	{
+		if (content instanceof Buffer)
+		{
+			return encoder.decode(content);
+		}
+		else
+		{
+			return encoder.encode(content);
+		}
+		return null;
+	}
+}
+						</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>http_interface HTTP和HTTPS接口处理</h2>
+					</section>
+					<section>
+						<h2>框架</h2>
+						<blockquote>首先我们看看初始化代码, 主要就是定义路由 认证加密密码 认证中间件,请看下面代码片段</blockquote>
+					<pre>
+						<code class="javascript">
+// 定义jwt的密码,可以在配置文件中指定
+var jwtsecret = (typeof app.conf.jwtsecret===typeof '')?app.conf.jwtsecret
+	:'1234567890abcdefghijklmnopq@#$';
+// 定义认证检测中间件函数
+httpInterface.prototype.ensureAuthorized = function(){//...}
+// 初始化函数
+httpInterface.prototype.init = function(){
+	// 定义授权接口
+	app.resource._webapp.post('/authenticate',function (req, res) {//...});
+	// 定义其他接口,需要认证中间件, 如果是公共资源,就不需要加入此中间件
+	app.resource._webapp.all('/notify',this.ensureAuthorized,
+				function(request, response){//...});
+});
+module.exports = new httpInterface();
+// 调用初始化
+if( !module.exports.init() ){
+	module.exports = null;
+}
+						</code></pre>
+					</section>
+					<section>
+						<h2>认证中间件</h2>
+						<blockquote>认证中间件主要用于验证头部token是否存在和有效</blockquote>
+					<pre>
+						<code class="javascript">
+// 如果是OPTION方法,先回复可以操作的HTTP方法, 如果有特殊需求可以修改此处
+if(req.method=='OPTIONS'){
+	res.setHeader('Allow','GET, POST, DELETE, HEAD, OPTIONS');
+	res.end();
+	return ;
+}
+var bearerToken;
+// 其他请求就需要获取头部认证信息
+var bearerHeader = req.headers["authorization"];
+if (typeof bearerHeader !== 'undefined') {
+	var bearer = bearerHeader.split(" ");
+	// 得到 Token
+	bearerToken = bearer[1];
+	req.token = bearerToken;
+	//...
+}
+else {
+	res.sendStatus(403); // 没有头部信息,返回403
+}
+						</code></pre>
+					</section>
+					<section>
+						<blockquote>从数据库中查询token,查看是否有效,解码token, 如果信息有效, 会把相关的User信息附加到请求中, 供下一个函数调用, 否则就直接返回错误代码</blockquote>
+					<pre>
+						<code class="javascript">
+var j2a = null;
+// 从mongoDB中查询 Token
+jwt2thirdapp.findOne({token: req.token}).exec().then(function (ret) {
+	if (j2a) {
+	// 解码 Token
+	var tokendata = jwt.decode(j2a.token, jwtsecret);
+	// 查询Token是否过期, Token本身就含有此信息,所以其实不需要数据库存储
+	if (tokendata.expire < Math.floor(new Date() / 1000)) {
+	throw({errcode: 1001, errmessage: "token is timeout."});
+	}
+	else {
+	//....
+
+	next();
+}
+						</code></pre>
+					</section>
+					<section>
+						<h2>通过认证发送数据</h2>
+						<blockquote>通过认证后,才会调用真正的函数,里面还有app_id和原始的token, 可以接着传递给下面的调用者, 可以根据app_id来区分权限 ,我们以notify为例</blockquote>
+					<pre>
+						<code class="javascript">
+// 从conf中获取function的配置,大家还记得那堆繁琐的配置吗,这里有用哦
+var option=sc.getSubObject(app.conf.options,request.query.fun);
+// 如果没有配置就返回了
+if (!!!option){
+	response.sendStatus(400);
+	response.end("fun error!");
+	return;
+}
+// 分析参数,进行MQ消息的装配
+if (!!!request.query.routekey) request.query.routekey="";
+if (!!!request.query.msgid) request.query.msgid="";
+var msgOption=undefined;
+if (request.query.msgid!="") msgOption={messageId:request.query.msgid};
+
+						</code></pre>
+					</section>
+					<section>
+						<blockquote>接着上面讲发送MQ消息, 里面有ProtoBuf的编解码器哦,如果有配置的话</blockquote>
+					<pre>
+						<code class="javascript">
+// 获取编码转换器,如果没有配置,就是默认的
+if (!!!option.convertor)
+	option.convertor=convertor.default;
+postData=option.convertor(request.raw_body);
+// 发送MQ消息通知
+option.object.publishMessage(option.exchange_name,request.query.routekey,
+							postData,msgOption);
+// 发送HTTP回应
+response.end("");
+						</code></pre>
+					</section>
+					<section>
+						<h2>讲讲RPC吧</h2>
+						<blockquote>前面讲了一个发送消息通知的, 我们大部分都会需要RPC Server的调用, 看request这个路由, 前面都是一样的, 只讲发送rpc部分</blockquote>
+					<pre>
+						<code class="javascript">
+// 获取编码转换器, 这里有配置的哦,要具体看协议文件
+if (!!!option.convertor) option.convertor=convertor.default;
+	postData=option.convertor(request.raw_body);
+if (postData!=null){
+	// 发送RPC消息,记得设置超时时间哦
+	option.object.sendRequest(postData,request.query.msgid,request.query.timeout)
+		.then(function(res){
+		// RPC回应
+		response.writeHead(200,'OK');
+		// 解码回复的消息,如果不需要返回直接的协议数据体, 应该在这里处理下再发送
+		var content=option.convertor(res.content);
+		response.end(JSON.stringify(content),'utf8');
+	}).catch(function(err){
+		response.statusCode=500;
+		response.end(err);
+	});
+}
+						</code></pre>
+					</section>
+					<section>
+						<h2>好吧, 我们开始讲授权</h2>
+						<blockquote>路由:authenticate, 授权部分可以说是超级简单, 先到MongoDB中查询app_id和app_secret, 后面大部分都是jwt库函数调用,以及将Token存入mongodb</blockquote>
+					<pre>
+						<code class="javascript">
+req.body = JSON.parse(req.raw_body);// 解析数据体
+// 从MongoDB中查询是否有效
+thirdapp.findOne({app_id: req.body.app_id, app_secret: req.body.app_secret}).exec()
+	.then(function (ret) {
+		if (ret) {
+			_thirdapp = ret;
+			var j2a = new jwt2thirdapp();
+			j2a.app_id = _thirdapp._id;
+			j2a.issudate = new Date();
+			// 设置过期时间
+			j2a.expiredate = Math.floor(j2a.issudate) / 1000 +
+							app.conf.token_timeout;
+			// 进行加密
+			j2a.token = jwt.sign(
+				{app_id: _thirdapp.app_id, expire: j2a.expiredate},
+			jwtsecret);
+			// 存入MongoDB, 正式应该是存到Redis
+			return j2a.save();
+	//...
+						</code></pre>
+					</section>
+					<section>
+
+						<blockquote>成功就会返回一串JSON, 内容可以自行修改, 主要有用的就是加密过的Token, 其他就是些辅助信息,失败就给错误代码</blockquote>
+					<pre>
+						<code class="javascript">
+res.json({
+	type: true,
+	data: {account_id: _thirdapp.app_id},
+	token: j2a1.token
+});
+						</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>mq_interface mq连接和其他</h2>
+					</section>
+					<section>
+						<blockquote>主要是处理conf里面的mq设置, 连接所有的连接, 声明需要的exchange rpc_client rpc_server等这些事情, 对整个程序的运作是非常重要的, 我们先看建立连接</blockquote>
+					<pre>
+						<code class="javascript">
+app.mq={};// 全局MQ连接字典
+// 创建MQ连接
+var createConnection=function(){
+	// 从配置文件中的获取所有的mq连接串设置, 建立所有的连接
+	try{
+		for (var key in app.conf.mq){
+			var url=app.conf.mq[key];
+			var conn=scRabbit.createConnect(url);
+			if (conn){
+				conn.start();
+				app.mq[key]=conn;
+			}
+		}
+		return true;
+	}
+	catch(e){}
+	return false;
+}
+						</code></pre>
+					</section>
+					<section>
+						<blockquote>接下来是处理Option中的所有内容,这部分就比较复杂点,会根据设置的类型,声明交换机, rpc客户端,rpc服务端等,请看下面的代码片段</blockquote>
+					<pre>
+						<code class="javascript">
+for (var key in config)
+{
+	var confObject=config[key];
+	if (typeof(confObject)=="object")
+	{
+		if(confObject.type=="rpc_client"){
+			// 创建为RPC
+			if (!confObject.mq) confObject.mq="default";
+			if (!confObject.rpc_name || confObject.rpc_name==""){
+				return false;
+			}
+			confObject.object=scRabbit.createRPCClient(
+				app.mq[confObject.mq],confObject.rpc_name);
+		}
+		else if (confObject.type=="rpc_server"){//...}
+		else if (confObject.type=="exchange"){//...}
+	}
+}
+						</code></pre>
+					</section>
+					<section>
+						<blockquote>我们还提供了一个RPC Server的响应函数, 有SR中目前不需要, 就不列举了, 有兴趣的可以自行查看onRPCRequest函数</blockquote>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>聊聊Client吧</h2>
+					</section>
+					<section>
+						<blockquote>Client的Sample主要基于Angular JS, 描述了如果认证, 如何保存Token<br>获取Token后, 如何放入到HTTP Header去访问保护资源, 如何判断Token过期<br>代码比较简单,我们就简单列举一下如何看code</blockquote>
+						<ol>
+							<li>login 传入（post json） app_id 和 app_secret(我们分配给他们的，之前为了测试方便，服务端直接用的mongodb)，参考 controller.js和 service.js</li>
+							<li>服务端验证成功后，传回一端json，只需要保存里面的token即可，保存在localStorage里面</li>
+							<li> 如果失败，有相应的错误，通过http code即可</li>
+							<li>logout只需要删除local Storage里的token即可，服务端会自动过期的</li>
+						</ol>
+					</section>
+					<section>
+						<blockquote>接着上回...</blockquote>
+						<ol start="5">
+							<li>如果访问非保护资源，不需要做任何特别的事情</li>
+							<li>访问保护资源，参考app.js和service.js，主要在于app.js的$httpProvider.interceptors，他会在请求发送前，检测localStorage是否有token存在，存在就放入Http Header中Authorization，格式 Bear token</li>
+							<li>服务端获取到请求后，直接从头部获取token验证信息，通过则返回资源，无效或者过期都会有相应的返回，客户端自己注意处理，过期重新获取token的例子在controller.js的$scope.getsrresource中有体现，不过比较简单</li>
+						</ol>
+					</section>
+				</section>
+
 
 			</div>
 
@@ -195,23 +586,29 @@ function main(){
 
 		<script src="reveal.js/lib/js/head.min.js"></script>
 		<script src="reveal.js/js/reveal.js"></script>
-		<script src="js/highlight/highlight.pack.js"></script>
+		<!--<script src="js/highlight/highlight.pack.js"></script>-->
 
 		<script>
 
-			hljs.initHighlightingOnLoad();
+//			hljs.initHighlightingOnLoad();
 			Reveal.initialize({
+				controls:true,
+				progress:true,
 				history: true,
 				transition: 'linear',
+//				mouseWheel:true,
 
-				math: {
-					// mathjax: 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
-					config: 'TeX-AMS_HTML-full'
-				},
+//				math: {
+//					mathjax: 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
+//					config: 'TeX-AMS_HTML-full'
+//				},
 
 				dependencies: [
-					{ src: 'reveal.js/lib/js/classList.js' },
-					{ src: 'reveal.js/plugin/math/math.js', async: true }
+					{ src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'js/highlight/highlight.pack.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'reveal.js/plugin/notes/notes.js' }
 				]
 			});
 
